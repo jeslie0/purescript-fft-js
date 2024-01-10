@@ -1,4 +1,4 @@
-module FFT.Array (new) where
+module FFT.Internal.Array (new) where
 import Control.Monad.ST (ST)
 import Data.Array.ST
 

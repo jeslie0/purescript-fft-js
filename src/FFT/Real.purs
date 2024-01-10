@@ -1,27 +1,24 @@
-module FFT.Complex where
+module FFT.Real where
 
 import Prelude
 
 import FFT as FFT
 import Data.Array as Array
 import Data.Array.ST as ArrayST
-import Data.Complex (Cartesian(..), imag, real)
+import Data.Complex (Cartesian(..))
 import Control.Monad.ST as ST
-import FFT.Array (new)
+import FFT.Internal.Array (new)
 import Partial.Unsafe (unsafePartial)
 
-fft :: Array (Cartesian Number) -> Array (Cartesian Number)
+fft :: Array Number -> Array (Cartesian Number)
 fft arr =
   unsquashed
   where
     fftObject =
       FFT.newFFT (Array.length arr)
 
-    squashedArr =
-      Array.concatMap (\z -> [real z, imag z]) arr
-
     transformedArray =
-      FFT.transform fftObject squashedArr
+      FFT.realTransform fftObject arr
 
     unsquashed =
       ArrayST.run do

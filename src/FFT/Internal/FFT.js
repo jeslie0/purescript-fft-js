@@ -525,9 +525,9 @@ export const toComplexArray = (fft) => (realInput) => {
     return fft_toComplexArray(fft, realInput)
 }
 
-// export const completeSpectrum = (fft) => (spectrum) => {
-//     return fft.completeSpectrum(spectrum)
-// }
+export const completeSpectrum = (fft) => (spectrum) => () => {
+    fft.completeSpectrum(spectrum)
+}
 
 export const transform = fft => data => {
     const out = fft_createComplexArray(fft);
@@ -547,3 +547,15 @@ export const inverseTransform = fft => data => {
     fft_inverseTransform(fft, out, data);
     return out;
 }
+
+export const transformST = fft => data => out => () =>
+    fft_transform(fft, out, data);
+
+
+export const realTransformST = fft => data => out => () => {
+    fft_realTransform(fft, out, data);
+    fft_completeSpectrum(fft, out)
+}
+
+export const inverseTransformST = fft => data => out => () =>
+    fft_inverseTransform(fft, out, data);
