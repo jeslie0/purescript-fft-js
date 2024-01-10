@@ -335,106 +335,76 @@ function _fft_realTransform4(fft) {
         var halfLen = len >>> 1;
         var quarterLen = halfLen >>> 1;
         var hquarterLen = quarterLen >>> 1;
-
         // Loop through offsets in the data
         for (outOff = 0; outOff < size; outOff += len) {
-            for (var i = 0, k = 0; i <= hquarterLen; i += 2, k += step) {
-                var A = outOff + i;
-                var B = A + quarterLen;
-                var C = B + quarterLen;
-                var D = C + quarterLen;
+            // Full case
+            var limit = outOff + quarterLen;
+            for (var i = outOff, k = 0; i < limit; i += 2, k += step) {
+                const A = i;
+                const B = A + quarterLen;
+                const C = B + quarterLen;
+                const D = C + quarterLen;
 
                 // Original values
-                var Ar = out[A];
-                var Ai = out[A + 1];
-                var Br = out[B];
-                var Bi = out[B + 1];
-                var Cr = out[C];
-                var Ci = out[C + 1];
-                var Dr = out[D];
-                var Di = out[D + 1];
+                const Ar = out[A];
+                const Ai = out[A + 1];
+                const Br = out[B];
+                const Bi = out[B + 1];
+                const Cr = out[C];
+                const Ci = out[C + 1];
+                const Dr = out[D];
+                const Di = out[D + 1];
 
                 // Middle values
-                var MAr = Ar;
-                var MAi = Ai;
+                const MAr = Ar;
+                const MAi = Ai;
 
-                var tableBr = table[k];
-                var tableBi = inv * table[k + 1];
-                var MBr = Br * tableBr - Bi * tableBi;
-                var MBi = Br * tableBi + Bi * tableBr;
+                const tableBr = table[k];
+                const tableBi = inv * table[k + 1];
+                const MBr = Br * tableBr - Bi * tableBi;
+                const MBi = Br * tableBi + Bi * tableBr;
 
-                var tableCr = table[2 * k];
-                var tableCi = inv * table[2 * k + 1];
-                var MCr = Cr * tableCr - Ci * tableCi;
-                var MCi = Cr * tableCi + Ci * tableCr;
+                const tableCr = table[2 * k];
+                const tableCi = inv * table[2 * k + 1];
+                const MCr = Cr * tableCr - Ci * tableCi;
+                const MCi = Cr * tableCi + Ci * tableCr;
 
-                var tableDr = table[3 * k];
-                var tableDi = inv * table[3 * k + 1];
-                var MDr = Dr * tableDr - Di * tableDi;
-                var MDi = Dr * tableDi + Di * tableDr;
+                const tableDr = table[3 * k];
+                const tableDi = inv * table[3 * k + 1];
+                const MDr = Dr * tableDr - Di * tableDi;
+                const MDi = Dr * tableDi + Di * tableDr;
 
                 // Pre-Final values
-                var T0r = MAr + MCr;
-                var T0i = MAi + MCi;
-                var T1r = MAr - MCr;
-                var T1i = MAi - MCi;
-                var T2r = MBr + MDr;
-                var T2i = MBi + MDi;
-                var T3r = inv * (MBr - MDr);
-                var T3i = inv * (MBi - MDi);
+                const T0r = MAr + MCr;
+                const T0i = MAi + MCi;
+                const T1r = MAr - MCr;
+                const T1i = MAi - MCi;
+                const T2r = MBr + MDr;
+                const T2i = MBi + MDi;
+                const T3r = inv * (MBr - MDr);
+                const T3i = inv * (MBi - MDi);
 
                 // Final values
-                var FAr = T0r + T2r;
-                var FAi = T0i + T2i;
+                const FAr = T0r + T2r;
+                const FAi = T0i + T2i;
 
-                var FBr = T1r + T3i;
-                var FBi = T1i - T3r;
+                const FCr = T0r - T2r;
+                const FCi = T0i - T2i;
+
+                const FBr = T1r + T3i;
+                const FBi = T1i - T3r;
+
+                const FDr = T1r - T3i;
+                const FDi = T1i + T3r;
 
                 out[A] = FAr;
                 out[A + 1] = FAi;
                 out[B] = FBr;
                 out[B + 1] = FBi;
-
-                // Output final middle point
-                if (i === 0) {
-                    var FCr = T0r - T2r;
-                    var FCi = T0i - T2i;
-                    out[C] = FCr;
-                    out[C + 1] = FCi;
-                    continue;
-                }
-
-                // Do not overwrite ourselves
-                if (i === hquarterLen)
-                    continue;
-
-                // In the flipped case:
-                // MAi = -MAi
-                // MBr=-MBi, MBi=-MBr
-                // MCr=-MCr
-                // MDr=MDi, MDi=MDr
-                var ST0r = T1r;
-                var ST0i = -T1i;
-                var ST1r = T0r;
-                var ST1i = -T0i;
-                var ST2r = -inv * T3i;
-                var ST2i = -inv * T3r;
-                var ST3r = -inv * T2i;
-                var ST3i = -inv * T2r;
-
-                var SFAr = ST0r + ST2r;
-                var SFAi = ST0i + ST2i;
-
-                var SFBr = ST1r + ST3i;
-                var SFBi = ST1i - ST3r;
-
-                var SA = outOff + quarterLen - i;
-                var SB = outOff + halfLen - i;
-
-                out[SA] = SFAr;
-                out[SA + 1] = SFAi;
-                out[SB] = SFBr;
-                out[SB + 1] = SFBi;
+                out[C] = FCr;
+                out[C + 1] = FCi;
+                out[D] = FDr;
+                out[D + 1] = FDi;
             }
         }
     }
@@ -507,27 +477,27 @@ function _fft_singleRealTransform4(fft, outOff,
 }
 
 
+
 export const newFFT = (size) => {
     return new FFT(size);
 }
 
 export const size = fft => fft.size
 
-export const fromComplexArray = (fft) => (complexArray) => {
-    return fft_fromComplexArray(fft, complexArray)
-}
+export const fromComplexArray = complexArray =>
+    fft_fromComplexArray(complexArray)
 
-export const createComplexArray = (fft) => {
-    return fft_createComplexArray(fft)
-}
 
-export const toComplexArray = (fft) => (realInput) => {
-    return fft_toComplexArray(fft, realInput)
-}
+export const createComplexArray = fft =>
+    fft_createComplexArray(fft)
 
-export const completeSpectrum = (fft) => (spectrum) => () => {
-    fft.completeSpectrum(spectrum)
-}
+
+export const toComplexArray = fft => realInput =>
+    fft_toComplexArray(fft, realInput)
+
+
+// export const completeSpectrum = fft => spectrum => () =>
+//     fft_completeSpectrum(spectrum)
 
 export const transform = fft => data => {
     const out = fft_createComplexArray(fft);
@@ -548,13 +518,20 @@ export const inverseTransform = fft => data => {
     return out;
 }
 
+export const fromComplexArrayST = complexArray => storage => () =>
+    fft_fromComplexArray(complexArray, storage)
+
+
+export const toComplexArrayST = fft => realInput =>
+    fft_toComplexArray(fft, realInput)
+
 export const transformST = fft => data => out => () =>
     fft_transform(fft, out, data);
 
 
 export const realTransformST = fft => data => out => () => {
     fft_realTransform(fft, out, data);
-    fft_completeSpectrum(fft, out)
+    // fft_completeSpectrum(fft, out)
 }
 
 export const inverseTransformST = fft => data => out => () =>

@@ -17,8 +17,8 @@ fft arr =
     fftObject =
       FFT.newFFT (Array.length arr)
 
-    transformedArray =
-      FFT.realTransform fftObject arr
+    FFT.ComplexArray transformedArray =
+      FFT.realTransform fftObject (FFT.RealArray arr)
 
     unsquashed =
       ArrayST.run do

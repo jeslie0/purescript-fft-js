@@ -20,8 +20,8 @@ fft arr =
     squashedArr =
       Array.concatMap (\z -> [real z, imag z]) arr
 
-    transformedArray =
-      FFT.transform fftObject squashedArr
+    FFT.ComplexArray transformedArray =
+      FFT.transform fftObject (FFT.ComplexArray squashedArr)
 
     unsquashed =
       ArrayST.run do
