@@ -5,7 +5,6 @@
     nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
     flake-utils.url = "github:numtide/flake-utils";
     ps-overlay.url = "github:thomashoneyman/purescript-overlay";
-    # mkSpagoDerivation.url = "/home/james/workspaces/PureScript/mkSpagoDerivation";
     mkSpagoDerivation.url = "github:jeslie0/mkSpagoDerivation";
   };
 
@@ -24,7 +23,7 @@
             esbuild
             spago-unstable
             purs-unstable
-            # ps-overlay.packages.${system}.purs-0_15_10
+            nodejs
           ];
       in
         {
@@ -33,12 +32,11 @@
             src = ./.;
             spagoLock = ./spago.lock;
             nativeBuildInputs = dependencies;
-            buildPhase = "spago bundle --outfile=main.min.js";
-            installPhase = "mkdir $out; cp -r main.min.js $out";
+            installPhase = "spago test >> $out";
           };
 
           devShell = pkgs.mkShell {
-            inputsFrom = [ # self.packages.${system}.default
+            inputsFrom = [ self.packages.${system}.default
                          ]; # Include build inputs from packages in
             # this list
             packages = with pkgs;
