@@ -8,7 +8,9 @@ package:
     - st: ">=6.2.0 <7.0.0"
   test:
     main: Test.Main
-    dependencies: []
+    dependencies:
+      - exceptions
+      - random
   publish:
     version: 1.0.0
     license: MIT

@@ -1,66 +1,95 @@
 module Test.Main where
 
--- import FFT.Real
--- import FFT.Internal.Array
-import FFT as FFT
 import Prelude
 
-import FFT (RealArray(..), ComplexArray(..))
 import Data.Array as Array
-import Data.Array.ST as ArrayST
-import Data.Complex (Cartesian(..))
+import Data.Foldable (foldl)
+import Data.Number (abs)
+import Data.Traversable (traverseDefault)
+import Data.Tuple (Tuple(..))
 import Effect (Effect)
 import Effect.Console as Console
+import Effect.Exception (throw)
+import Effect.Random (randomRange)
+import FFT (RealArray(..), ComplexArray(..))
+import FFT as FFT
+import FFT.Complex (toComplexArray, fromComplexArray)
+import Test.FFT as MyFFT
 
-realArray :: RealArray
-realArray =
-  RealArray [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0 ]
 
-complexArray :: ComplexArray
-complexArray =
-  ComplexArray [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0 ]
+-- | We want to check if the two arrays are equal up to a floating
+-- | point error
+myArrayEq :: Array Number -> Array Number -> Tuple Boolean Int
+myArrayEq arr1 arr2 =
+  foldl (\(Tuple prevBool prevInt) (Tuple a b) -> Tuple (prevBool && (abs (a - b) < 10e-7)) $ if prevBool == false then prevInt - 1 else prevInt + 1) (Tuple true 0) (Array.zip arr1 arr2)
 
-newFFT :: FFT.FFT
-newFFT =
-  FFT.newFFT 8
 
-fromComplexArray :: RealArray
-fromComplexArray =
-  FFT.fromComplexArray complexArray
+randomArray2048 :: Effect (Array Number)
+randomArray2048 =
+  traverseDefault (\_ -> randomRange (-2048.0) 2048.0) (Array.replicate 2048 0)
 
-createComplexArray :: ComplexArray
-createComplexArray =
-  FFT.createComplexArray newFFT
+randomArray4096 :: Effect (Array Number)
+randomArray4096 =
+  traverseDefault (\_ -> randomRange (-2048.0) 2048.0) (Array.replicate 4096 0)
 
-toComplexArray :: ComplexArray
-toComplexArray =
-  FFT.toComplexArray newFFT realArray
+realTest :: Effect Boolean
+realTest = do
+  initArray <- randomArray2048
+  let fft = FFT.makeFFT 2048
+      ComplexArray transformedArray = FFT.realTransform fft $ RealArray initArray
+      ComplexArray myTransformedArray = toComplexArray $ MyFFT.fourierNumbers initArray
+  let Tuple result indx = myArrayEq myTransformedArray transformedArray
+  if result
+    then pure true
+    else do
+    Console.log $ "Initial array: " <> show initArray <> "\n"
+    Console.log $ "fft.js array: " <> show transformedArray <> "\n"
+    Console.log $ "my fft array: " <> show myTransformedArray <> "\n"
+    _ <- throw $ "Real valued ffts don't match at position: " <> show indx
+    pure false
 
-transform :: ComplexArray
-transform =
-  FFT.transform newFFT complexArray
+complexTest :: Effect Boolean
+complexTest = do
+  initArray <- randomArray4096
+  let fft = FFT.makeFFT 2048
+      ComplexArray transformedArray = FFT.transform fft $ ComplexArray initArray
+      ComplexArray myTransformedArray = toComplexArray <<< MyFFT.fourier <<< fromComplexArray $ ComplexArray initArray
+  let Tuple result indx = myArrayEq myTransformedArray transformedArray
+  if result
+    then pure true
+    else do
+    Console.log $ "Initial array: " <> show initArray <> "\n"
+    Console.log $ "fft.js array: " <> show transformedArray <> "\n"
+    Console.log $ "my fft array: " <> show myTransformedArray <> "\n"
+    _ <- throw $ "Complex valued ffts don't match at position: " <> show indx
+    pure false
 
-realTransform :: ComplexArray
-realTransform =
-  FFT.realTransform newFFT realArray
-
-inverseTransform :: ComplexArray
-inverseTransform =
-  FFT.inverseTransform newFFT complexArray
-
-complexRealTransform :: ComplexArray
-complexRealTransform =
-  FFT.transform newFFT toComplexArray
-
+inverseTest :: Effect Boolean
+inverseTest = do
+  initArray <- randomArray4096
+  let fft = FFT.makeFFT 2048
+      array = FFT.transform fft $ ComplexArray initArray
+      ComplexArray invArray = FFT.inverseTransform fft array
+  let Tuple result indx = myArrayEq initArray invArray
+  if result
+    then pure true
+    else do
+    Console.log $ "Initial array: " <> show initArray <> "\n"
+    Console.log $ "Transformed array " <> show array <> "\n"
+    Console.log $ "Inversed: " <> show invArray <> "\n"
+    _ <- throw $ "Complex valued ffts don't match at position:" <> show indx
+    pure false
 
 main :: Effect Unit
 main = do
-  Console.log $ "real array: " <> show realArray <> "\n"
-  Console.log $ "complex array: " <> show complexArray <> "\n"
-  Console.log $ "from complex array: " <> show fromComplexArray <> "\n"
-  Console.log $ "create complex array: " <> show createComplexArray <> "\n"
-  Console.log $ "to complex array: " <> show toComplexArray <> "\n"
-  Console.log $ "transform: " <> show transform <> "\n"
-  Console.log $ "real transform: " <> show realTransform <> "\n"
-  Console.log $ "inverse transform: " <> show inverseTransform <> "\n"
-  Console.log $ "real to complex transform: " <> show complexRealTransform <> "\n"
+  Console.log $ "Running real test..."
+  realTestResult <- realTest
+  Console.log $ "Real test result: " <> show realTestResult <> "\n"
+
+  Console.log $ "Running complex test..."
+  complexTestResult <- complexTest
+  Console.log $ "Complex test result: " <> show complexTestResult <> "\n"
+
+  Console.log $ "Running inverse test..."
+  inverseTestResult <- inverseTest
+  Console.log $ "Inverse test result: " <> show inverseTestResult <> "\n"

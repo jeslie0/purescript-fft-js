@@ -23,7 +23,7 @@ class FFT {
             power++;
 
         // Calculate initial step's width:
-        //   * If we are full radix-4 - it is 2x smaller to give inital len=8
+        //   * If we are full radix-4 - it is 2x smaller to give initial len=8
         //   * Otherwise it is the same as `power` to give len=4
         this._width = power % 2 === 0 ? power - 1 : power;
 
@@ -113,7 +113,7 @@ function fft_inverseTransform(fft, out, data) {
     fft._data = null;
 };
 
-// radix-4 implementation
+// Radix-4 implementation
 //
 // NOTE: Uses of `var` are intentional for older V8 version that do not
 // support both `let compound assignments` and `const phi`
@@ -478,26 +478,20 @@ function _fft_singleRealTransform4(fft, outOff,
 
 
 
-export const newFFT = (size) => {
-    return new FFT(size);
-}
+export const makeFFT = size =>
+    new FFT(size);
 
-export const size = fft => fft.size
+export const fftSize = fft =>
+    fft.size
 
 export const fromComplexArray = complexArray =>
     fft_fromComplexArray(complexArray)
 
-
 export const createComplexArray = fft =>
     fft_createComplexArray(fft)
 
-
 export const toComplexArray = fft => realInput =>
     fft_toComplexArray(fft, realInput)
-
-
-// export const completeSpectrum = fft => spectrum => () =>
-//     fft_completeSpectrum(spectrum)
 
 export const transform = fft => data => {
     const out = fft_createComplexArray(fft);
@@ -508,7 +502,6 @@ export const transform = fft => data => {
 export const realTransform = fft => data => {
     const out = fft_createComplexArray(fft);
     fft_realTransform(fft, out, data);
-    fft_completeSpectrum(fft, out)
     return out;
 }
 
@@ -518,9 +511,11 @@ export const inverseTransform = fft => data => {
     return out;
 }
 
+// Mutable functions
+
+
 export const fromComplexArrayST = complexArray => storage => () =>
     fft_fromComplexArray(complexArray, storage)
-
 
 export const toComplexArrayST = fft => realInput =>
     fft_toComplexArray(fft, realInput)
@@ -528,11 +523,11 @@ export const toComplexArrayST = fft => realInput =>
 export const transformST = fft => data => out => () =>
     fft_transform(fft, out, data);
 
-
-export const realTransformST = fft => data => out => () => {
+export const realTransformST = fft => data => out => () =>
     fft_realTransform(fft, out, data);
-    // fft_completeSpectrum(fft, out)
-}
 
 export const inverseTransformST = fft => data => out => () =>
     fft_inverseTransform(fft, out, data);
+
+export const completeSpectrum = fft => spectrum => () =>
+    fft_completeSpectrum(fft, spectrum)

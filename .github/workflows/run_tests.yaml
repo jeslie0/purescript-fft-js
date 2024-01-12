@@ -1,0 +1,26 @@
+name: Run tests
+run-name: Run tests to make sure that the fourier transforms give the correct result
+on:
+  push:
+    branches:
+    - develop
+    - main
+
+jobs:
+  run-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setting up Checkout
+        uses: actions/checkout@v3
+        with:
+          github_access_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Nix
+        uses: cachix/install-nix-action@v18
+        with:
+          github_access_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Run tests
+        run: |
+          nix develop .#devShells.x86_64-linux.testing
+          spago test

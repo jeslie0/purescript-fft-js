@@ -47,6 +47,14 @@
                 nodePackages.live-server
               ] ++ dependencies; # Extra packages to go in the shell
           };
+
+          devShells.testing = pkgs.mkShell {
+            packages = with pkgs;
+              [ nodejs
+                pkgs.spago-unstable
+                pkgs.purs-unstable
+              ] ++ dependencies; # Extra packages to go in the shell
+          };
         }
     );
 }
