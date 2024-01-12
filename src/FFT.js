@@ -476,58 +476,104 @@ function _fft_singleRealTransform4(fft, outOff,
     out[outOff + 7] = FDi;
 }
 
-
-
-export const makeFFT = size =>
-    new FFT(size);
-
-export const fftSize = fft =>
-    fft.size
-
-export const fromComplexArray = complexArray =>
-    fft_fromComplexArray(complexArray)
-
-export const createComplexArray = fft =>
-    fft_createComplexArray(fft)
-
-export const toComplexArray = fft => realInput =>
-    fft_toComplexArray(fft, realInput)
-
-export const transform = fft => data => {
-    const out = fft_createComplexArray(fft);
-    fft_transform(fft, out, data);
-    return out;
+export function makeFFT(size) {
+    return new FFT(size);
 }
 
-export const realTransform = fft => data => {
-    const out = fft_createComplexArray(fft);
-    fft_realTransform(fft, out, data);
-    return out;
+export function fftSize(fft) {
+    return fft.size;
 }
 
-export const inverseTransform = fft => data => {
-    const out = fft_createComplexArray(fft);
-    fft_inverseTransform(fft, out, data);
-    return out;
+export function fromComplexArray(complexArray) {
+    return fft_fromComplexArray(complexArray);
+}
+
+export function createComplexArray(fft) {
+    return fft_createComplexArray(fft);
+}
+
+export function toComplexArray(fft) {
+    return function(realInput) {
+        return fft_toComplexArray(fft, realInput);
+    };
+}
+
+export function transform(fft) {
+    return function(data) {
+        var out = fft_createComplexArray(fft);
+        fft_transform(fft, out, data);
+        return out;
+    };
+}
+
+export function realTransform(fft) {
+    return function(data) {
+        var out = fft_createComplexArray(fft);
+        fft_realTransform(fft, out, data);
+        return out;
+    };
+}
+
+export function inverseTransform(fft) {
+    return function(data) {
+        var out = fft_createComplexArray(fft);
+        fft_inverseTransform(fft, out, data);
+        return out;
+    };
 }
 
 // Mutable functions
 
+export function fromComplexArrayST(complexArray) {
+    return function(storage) {
+        return function() {
+            return fft_fromComplexArray(complexArray, storage);
+        };
+    };
+}
 
-export const fromComplexArrayST = complexArray => storage => () =>
-    fft_fromComplexArray(complexArray, storage)
+export function toComplexArrayST(fft) {
+    return function(realInput) {
+        return function() {
+            return fft_toComplexArray(fft, realInput);
+        }
+    };
+}
 
-export const toComplexArrayST = fft => realInput =>
-    fft_toComplexArray(fft, realInput)
+export function transformST(fft) {
+    return function(data) {
+        return function(out) {
+            return function() {
+                fft_transform(fft, out, data);
+            };
+        };
+    };
+}
 
-export const transformST = fft => data => out => () =>
-    fft_transform(fft, out, data);
+export function realTransformST(fft) {
+    return function(data) {
+        return function(out) {
+            return function() {
+                fft_realTransform(fft, out, data);
+            };
+        };
+    };
+}
 
-export const realTransformST = fft => data => out => () =>
-    fft_realTransform(fft, out, data);
+export function inverseTransformST(fft) {
+    return function(data) {
+        return function(out) {
+            return function() {
+                fft_inverseTransform(fft, out, data);
+            };
+        };
+    };
+}
 
-export const inverseTransformST = fft => data => out => () =>
-    fft_inverseTransform(fft, out, data);
-
-export const completeSpectrum = fft => spectrum => () =>
-    fft_completeSpectrum(fft, spectrum)
+export function completeSpectrum(fft) {
+    return function(spectrum) {
+        return function() {
+            fft_completeSpectrum(fft, spectrum);
+        };
+    };
+}
