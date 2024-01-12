@@ -1,5 +1,5 @@
 package:
-  name: fft
+  name: fft-js
   dependencies:
     - arrays: ">=7.3.0 <8.0.0"
     - cartesian: ">=1.0.6 <2.0.0"
@@ -12,11 +12,11 @@ package:
       - exceptions
       - random
   publish:
-    version: 1.0.0
+    version: 0.1.0
     license: MIT
     location:
       githubOwner: jeslie0
-      githubRepo: purescript-fft
+      githubRepo: purescript-fft-js
 workspace:
   package_set:
     registry: 47.12.0

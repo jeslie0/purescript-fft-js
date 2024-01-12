@@ -1,6 +1,6 @@
 workspace:
   packages:
-    fft:
+    fft-js:
       path: ./
       dependencies:
         - arrays: ">=7.3.0 <8.0.0"

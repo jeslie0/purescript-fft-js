@@ -1,9 +1,9 @@
-# purescript-fftjs
+# purescript-fft-js
 -----
-![](https://img.shields.io/badge/built%20for-PureScript-1d222d.svg)
-[![Latest release](http://img.shields.io/github/release/jeslie0/purescript-fftjs.svg)](https://github.com/jeslie0/purescript-fftjs/releases)
-[![Build status](https://github.com/jeslie0/purescript-fftjs/workflows/CI/badge.svg?branch=master)](https://github.com/jeslie0/purescript-fftjs/actions?query=workflow%3ACI+branch%3Amaster)
-[![Pursuit](https://pursuit.purescript.org/packages/purescript-fftjs/badge)](https://pursuit.purescript.org/packages/purescript-fftjs)
+![](https://img.shields.io/badge/PureScript-1d222d.svg)
+[![Build status](https://img.shields.io/github/actions/workflow/status/jeslie0/purescript-fft-js/CI.yml
+)](https://github.com/jeslie0/purescript-fft-js/actions/workflows/CI.yml)
+[![Pursuit](https://pursuit.purescript.org/packages/purescript-fft-js/badge)](https://pursuit.purescript.org/packages/purescript-fft-js)
 
 A PureScript wrapper around [fft.js](https://github.com/indutny/fft.js/), providing functions to take the Fast Fourier Transform of real and complex arrays. There is also a module extending the functionality to the [cartesian](https://github.com/Ebmtranceboy/purescript-cartesian) library.
 
@@ -15,9 +15,9 @@ Whenever we refer to the size of an array, we mean the number of *numbers* in it
 ## Installation
 
 ```
-spago install fftjs
+spago install fft-js
 ```
 
 ## Documentation
 
-Module documentation is [published on Pursuit](http://pursuit.purescript.org/packages/purescript-fftjs).
+Module documentation is [published on Pursuit](http://pursuit.purescript.org/packages/purescript-fft-js).
