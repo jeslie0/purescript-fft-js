@@ -1,5 +1,5 @@
-name: Run tests
-run-name: Run tests to make sure that the fourier transforms give the correct result
+name: CI
+run-name: Run tests to make sure that the Fourier transforms give the correct result
 on:
   push:
     branches:
@@ -22,5 +22,4 @@ jobs:
 
       - name: Run tests
         run: |
-          nix develop .#devShells.x86_64-linux.testing
-          spago test
+          nix develop .#devShells.x86_64-linux.testing --command spago test
