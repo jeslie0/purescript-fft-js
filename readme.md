@@ -1,6 +1,7 @@
 # purescript-fft-js
 -----
 ![](https://img.shields.io/badge/PureScript-1d222d.svg)
+[![Latest release](https://img.shields.io/github/v/release/jeslie0/purescript-fft-js)](https://github.com/jeslie0/purescript-fft-js/releases)
 [![Build status](https://img.shields.io/github/actions/workflow/status/jeslie0/purescript-fft-js/CI.yml
 )](https://github.com/jeslie0/purescript-fft-js/actions/workflows/CI.yml)
 [![Pursuit](https://pursuit.purescript.org/packages/purescript-fft-js/badge)](https://pursuit.purescript.org/packages/purescript-fft-js)
